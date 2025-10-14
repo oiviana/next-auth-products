@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "next-auth-products-backend",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -12,9 +12,12 @@
     "prisma": "^6.17.1"
   },
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio"
   },
   "devDependencies": {
     "@types/node": "^24.7.2",
