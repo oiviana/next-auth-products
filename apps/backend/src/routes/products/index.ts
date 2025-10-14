@@ -1,20 +1,27 @@
 import { FastifyInstance } from "fastify";
-import { getAllProducts, createProduct } from "@controllers/products"; // ajuste o path conforme seu projeto
+import { getAllProducts, createProduct } from "@controllers/products";
 import { Prisma } from "@prisma/client";
 
 export async function productRoutes(server: FastifyInstance) {
-  // GET /products
   server.get("/", async (req, reply) => {
-    const products = await getAllProducts();
-    return products;
+    try {
+      const products = await getAllProducts();
+      return reply.send(products);
+    } catch (error) {
+      server.log.error({ error }, "Erro ao buscar produtos");
+      return reply.status(500).send({ error: "Erro interno do servidor" });
+    }
   });
 
-  // POST /products
-  server.post("/", async (req, reply) => {
-    // tipando o body usando o tipo do Prisma
-    const data: Prisma.ProductCreateInput = req.body;
-
-    const product = await createProduct(data);
-    return product;
+  // POST /products - SIMPLES E DIRETO
+  server.post<{ Body: Prisma.ProductCreateInput }>("/", async (req, reply) => {
+    try {
+      const data = req.body; 
+      const product = await createProduct(data);
+      return reply.status(201).send(product);
+    } catch (error) {
+      server.log.error({ error }, "Erro ao criar produto");
+      return reply.status(500).send({ error: "Erro interno do servidor" });
+    }
   });
 }
