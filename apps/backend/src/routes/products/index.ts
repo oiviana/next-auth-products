@@ -13,7 +13,6 @@ export async function productRoutes(server: FastifyInstance) {
     }
   });
 
-  // POST /products - SIMPLES E DIRETO
   server.post<{ Body: Prisma.ProductCreateInput }>("/", async (req, reply) => {
     try {
       const data = req.body; 
