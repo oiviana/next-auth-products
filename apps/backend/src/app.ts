@@ -1,7 +1,8 @@
 import { FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
-import { prismaPlugin } from "./plugins/prisma";
-import { productRoutes } from "./routes/products";
+import { prismaPlugin } from "@plugins/prisma";
+import { productRoutes } from "@routes/products";
+import { userRoutes } from "@routes/users";
 import { Prisma } from "@prisma/client"; 
 
 export async function app(server: FastifyInstance) {
@@ -24,4 +25,5 @@ export async function app(server: FastifyInstance) {
 
   // Rotas
   server.register(productRoutes, { prefix: "/products" });
+  server.register(userRoutes, { prefix: "users" });
 }
