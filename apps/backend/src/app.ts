@@ -25,5 +25,5 @@ export async function app(server: FastifyInstance) {
 
   // Rotas
   server.register(productRoutes, { prefix: "/products" });
-  server.register(userRoutes, { prefix: "users" });
+  server.register(userRoutes, { prefix: "/users" });
 }
