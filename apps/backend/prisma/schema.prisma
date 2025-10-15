@@ -44,7 +44,6 @@ model User {
 
   // relations
   store     Store?
-  storeId   String?
   products  Product[]      @relation("sellerProducts")
   favorites Favorite[]
   cart      Cart?
