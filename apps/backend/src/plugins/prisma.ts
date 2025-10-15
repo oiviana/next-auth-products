@@ -9,13 +9,13 @@ export const prismaPlugin = fp(async (server) => {
 
     await prisma.$connect();
     
-    server.log.info('✅ Prisma Client conectado com sucesso');
+    server.log.info('Prisma Client conectado com sucesso');
 
     server.decorate("prisma", prisma);
 
     server.addHook("onClose", async (srv) => {
       await srv.prisma.$disconnect();
-      srv.log.info('✅ Prisma Client desconectado');
+      srv.log.info('Prisma Client desconectado');
     });
 
   } catch (error) {
