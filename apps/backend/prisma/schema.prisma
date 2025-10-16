@@ -45,7 +45,6 @@ model User {
 
   // relations
   store     Store?
-  products  Product[]      @relation("sellerProducts")
   favorites Favorite[]
   cart      Cart?
   orders    Order[]        @relation("userOrders")
@@ -69,8 +68,6 @@ model Product {
   id       String  @id @default(uuid())
   storeId  String
   store    Store   @relation(fields: [storeId], references: [id], onDelete: Cascade) // ✅ relacionamento correto
-  sellerId String?
-  seller   User?   @relation("sellerProducts", fields: [sellerId], references: [id])
 
   name        String
   description String?
