@@ -8,17 +8,15 @@
     "skipLibCheck": true,
     "outDir": "dist",
     "rootDir": "src",
-    "baseUrl": "./src",      
     "paths": {
-      "@controllers/*": ["controllers/*"],
-      "@plugins/*": ["plugins/*"],
-      "@routes/*": ["routes/*"],
-      "@lib/*": ["lib/*"],
-      "@services/*": ["services/*"],
-      "@interfaces/*": ["interfaces/*"],
-      "@utils/*": ["utils/*"],
-      "@schemas/*": ["schemas/*"]
-
+      "@controllers/*": ["./src/controllers/*"],
+      "@plugins/*": ["./src/plugins/*"],
+      "@routes/*": ["./src/routes/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@services/*": ["./src/services/*"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@schemas/*": ["./src/schemas/*"]
     }
   },
   "include": ["src"]
