@@ -13,14 +13,19 @@ export async function productRoutes(server: FastifyInstance) {
     }
   });
 
-  server.post<{ Body: Prisma.ProductCreateInput }>("/", async (req, reply) => {
-    try {
-      const data = req.body; 
-      const product = await createProduct(data);
-      return reply.status(201).send(product);
-    } catch (error) {
-      server.log.error({ error }, "Erro ao criar produto");
-      return reply.status(500).send({ error: "Erro interno do servidor" });
+  server.post<{ Body: Prisma.ProductCreateInput }>(
+    "/",
+    { preValidation: [server.authenticate] }, // fastfy auth
+    async (req, reply) => {
+      try {
+        const data = req.body;
+        const product = await createProduct(data);
+
+        return reply.status(201).send(product);
+      } catch (error) {
+        server.log.error({ error }, "Erro ao criar produto");
+        return reply.status(500).send({ error: "Erro interno do servidor" });
+      }
     }
-  });
+  );
 }
