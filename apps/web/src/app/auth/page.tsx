@@ -1,10 +1,9 @@
-// app/auth/page.tsx
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import LoginForm from "@/components/LoginForm";
+import LoginForm from "@/components/forms/LoginForm";
 
 export default function AuthPage() {
   const { user, loading } = useAuth();
@@ -12,12 +11,19 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      router.replace("/dashboard");
+
+      if (user.role === "SELLER") {
+        router.replace("/seller");
+      }
+      
+      if (user.role === "CLIENT") {
+        router.replace("/client");
+      }
     }
   }, [loading, user, router]);
 
   if (loading) return <p>Carregando...</p>;
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center">
       <LoginForm />

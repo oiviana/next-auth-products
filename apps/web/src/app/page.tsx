@@ -1,4 +1,3 @@
-// app/dashboard/page.tsx
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,9 +10,9 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace("/auth"); 
+      router.replace("/auth");
     }
-    
+
     if (!loading && user) {
 
       if (user.role === "SELLER") router.replace("/seller");

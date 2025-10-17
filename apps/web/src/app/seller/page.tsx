@@ -1,5 +1,7 @@
+import SellerMenu from "@/components/seller/menu/SellerMenu";
+
 export default function SellerPage(){
     return(
-        <h1>Seller Page</h1>
+        <SellerMenu/>
     )
 }
