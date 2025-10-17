@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { createUser } from "@controllers/users";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma-generated/prisma";
 
 export async function userRoutes(server: FastifyInstance) {
     
