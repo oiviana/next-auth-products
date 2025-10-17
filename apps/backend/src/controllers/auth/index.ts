@@ -33,7 +33,7 @@ export async function loginController(
         email: user.email,
         role: user.role,
       },
-      { expiresIn: "1d" }
+      { expiresIn: "1h" }
     );
 
     return reply.send({
