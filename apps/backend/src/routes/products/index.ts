@@ -1,11 +1,14 @@
 import { FastifyInstance } from "fastify";
-import { getAllProducts, createProduct } from "@controllers/products";
-import { Prisma } from "@prisma/client";
+import { getAllProductsBySeller, createProduct } from "@controllers/products";
+import { Prisma } from "@prisma-generated/prisma";
 
 export async function productRoutes(server: FastifyInstance) {
-  server.get("/", async (req, reply) => {
+
+  server.get("/", 
+     { preValidation: [server.authenticate] },
+     async (req, reply) => {
     try {
-      const products = await getAllProducts();
+      const products = await getAllProductsBySeller(req, reply);
       return reply.send(products);
     } catch (error) {
       server.log.error({ error }, "Erro ao buscar produtos");
