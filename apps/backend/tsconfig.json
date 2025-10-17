@@ -16,6 +16,7 @@
       "@services/*": ["./src/services/*"],
       "@interfaces/*": ["./src/interfaces/*"],
       "@utils/*": ["./src/utils/*"],
+      "@prisma-generated/*": ["./prisma/generated/*"],
       "@schemas/*": ["./src/schemas/*"]
     }
   },

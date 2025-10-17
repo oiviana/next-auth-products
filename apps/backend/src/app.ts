@@ -3,7 +3,7 @@ import cors from "@fastify/cors";
 import { prismaPlugin } from "@plugins/prisma";
 import { productRoutes } from "@routes/products";
 import { userRoutes } from "@routes/users";
-import { Prisma } from "@prisma/client"; 
+import { Prisma } from "@prisma-generated/prisma"; 
 import { authRoutes } from "@routes/auth";
 
 export async function app(server: FastifyInstance) {
