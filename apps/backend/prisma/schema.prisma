@@ -152,7 +152,6 @@ model CSVImportJob {
   id            String       @id @default(uuid())
   userId        String
   user          User         @relation(fields: [userId], references: [id])
-  storeId       String?
   fileUrl       String // S3 / object storage url
   status        ImportStatus @default(PENDING)
   progress      Int          @default(0) // 0-100
