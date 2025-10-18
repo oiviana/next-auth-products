@@ -3,8 +3,9 @@ import cors from "@fastify/cors";
 import { prismaPlugin } from "@plugins/prisma";
 import { productRoutes } from "@routes/products";
 import { userRoutes } from "@routes/users";
-import { Prisma } from "@prisma-generated/prisma"; 
+import { Prisma } from "@prisma-generated/prisma";
 import { authRoutes } from "@routes/auth";
+import { uploadRoutes } from "@routes/upload";
 
 export async function app(server: FastifyInstance) {
   // Middlewares
@@ -28,4 +29,5 @@ export async function app(server: FastifyInstance) {
   server.register(productRoutes, { prefix: "/products" });
   server.register(userRoutes, { prefix: "/users" });
   server.register(authRoutes, { prefix: "/auth" });
+  server.register(uploadRoutes, { prefix: "/upload" });
 }
