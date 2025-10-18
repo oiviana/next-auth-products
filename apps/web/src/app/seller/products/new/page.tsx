@@ -1,4 +1,3 @@
-// app/add-products/page.tsx (ou onde você quiser colocar)
 import UploadCSV from '@/components/forms/UploadCSV'
 
 export default function AddProductsPage() {
