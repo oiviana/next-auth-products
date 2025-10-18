@@ -26,7 +26,7 @@ interface CSVRow {
   name: string;
   description?: string;
   price: string;
-  imageUrl?: string;
+  imageurl?: string;
   stock?: string;
 }
 
@@ -41,7 +41,7 @@ export async function uploadCSV(
 ) {
   try {
     const userId = await getUserIdByToken(request);
-
+    
     const userWithStore = await request.server.prisma.user.findUnique({
       where: { id: userId },
       include: { store: true },
@@ -53,7 +53,7 @@ export async function uploadCSV(
 
     const multipartRequest = request as unknown as MultipartRequest;
     const data = await multipartRequest.file();
-
+    
     if (!data) {
       return reply.status(400).send({ error: 'Nenhum arquivo enviado' });
     }
@@ -96,7 +96,7 @@ export async function uploadCSV(
     });
 
     const downloadUrl = await getSignedUrl(s3Client, getCommand, {
-      expiresIn: 604800 // 7 dias em segundos
+      expiresIn: 604800
     });
 
     const job = await request.server.prisma.cSVImportJob.create({
@@ -143,11 +143,8 @@ export async function uploadCSV(
 
 async function startCSVProcessing(jobId: string, storeId: string): Promise<void> {
   try {
-    console.log(`Iniciando processamento do job ${jobId} para store ${storeId}`);
-
     const job = await prisma.cSVImportJob.findUnique({ where: { id: jobId } });
     if (!job) {
-      console.error(`Job ${jobId} não encontrado`);
       return;
     }
 
@@ -157,8 +154,8 @@ async function startCSVProcessing(jobId: string, storeId: string): Promise<void>
       data: { status: 'PROCESSING', progress: 10 }
     });
 
-    // ✅ CORREÇÃO: Buscar arquivo do S3 usando SDK (não fetch)
-    const key = job.fileUrl.split('.amazonaws.com/')[1]; // Extrai a chave do arquivo da URL
+    // Buscar arquivo do S3 usando SDK
+    const key = job.fileUrl.split('.amazonaws.com/')[1];
     const getCommand = new GetObjectCommand({
       Bucket: BUCKET_NAME,
       Key: key,
@@ -173,7 +170,7 @@ async function startCSVProcessing(jobId: string, storeId: string): Promise<void>
     // Converter o stream para string
     const csvText = await streamToString(Body as import('stream').Readable);
 
-    // ✅ Função auxiliar para converter stream
+    // Função auxiliar para converter stream
     async function streamToString(stream: import('stream').Readable): Promise<string> {
       return new Promise((resolve, reject) => {
         const chunks: Buffer[] = [];
@@ -183,22 +180,20 @@ async function startCSVProcessing(jobId: string, storeId: string): Promise<void>
       });
     }
 
-    const { data, errors, meta } = parse<CSVRow>(csvText, {
+    const { data: csvData, errors, meta } = parse<CSVRow>(csvText, {
       header: true,
       skipEmptyLines: true,
       transformHeader: (header) => header.trim().toLowerCase(),
     });
 
-    // ... o resto do código permanece igual
     if (errors.length > 0) {
-      console.error('Erros ao parsear CSV:', errors);
       await prisma.cSVImportJob.update({
         where: { id: jobId },
         data: {
           status: 'FAILED',
           errorFileUrl: job.fileUrl,
           processedRows: 0,
-          totalRows: data.length
+          totalRows: csvData.length
         },
       });
       return;
@@ -208,8 +203,8 @@ async function startCSVProcessing(jobId: string, storeId: string): Promise<void>
     const errorRows: { row: CSVRow; error: string }[] = [];
 
     // Processar cada linha
-    for (let i = 0; i < data.length; i++) {
-      const row = data[i];
+    for (let i = 0; i < csvData.length; i++) {
+      const row = csvData[i];
 
       // Validações
       if (!row.name?.trim()) {
@@ -238,8 +233,8 @@ async function startCSVProcessing(jobId: string, storeId: string): Promise<void>
       products.push({
         name: row.name.trim(),
         description: row.description?.trim() || '',
-        price: Math.round(price * 100), // Converter para centavos
-        imageUrl: row.imageUrl?.trim() || '',
+        price: Math.round(price * 100),
+        imageUrl: row.imageurl?.trim() || '',
         stock,
         soldCount: 0,
         storeId,
@@ -248,8 +243,8 @@ async function startCSVProcessing(jobId: string, storeId: string): Promise<void>
       });
 
       // Atualizar progresso a cada 10%
-      if (i % Math.ceil(data.length / 10) === 0) {
-        const progress = 10 + Math.floor((i / data.length) * 80);
+      if (i % Math.ceil(csvData.length / 10) === 0) {
+        const progress = 10 + Math.floor((i / csvData.length) * 80);
         await prisma.cSVImportJob.update({
           where: { id: jobId },
           data: { progress }
@@ -262,7 +257,7 @@ async function startCSVProcessing(jobId: string, storeId: string): Promise<void>
       await prisma.$transaction(async (tx) => {
         await tx.product.createMany({
           data: products,
-          skipDuplicates: true // Evitar duplicatas
+          skipDuplicates: true
         });
       });
     }
@@ -276,14 +271,12 @@ async function startCSVProcessing(jobId: string, storeId: string): Promise<void>
       data: {
         status: finalStatus,
         progress: 100,
-        totalRows: data.length,
+        totalRows: csvData.length,
         processedRows: products.length,
         errorRows: errorRows.length,
         errorFileUrl: errorRows.length > 0 ? job.fileUrl : null,
       },
     });
-
-    console.log(`Job ${jobId} finalizado. Status: ${finalStatus}, Produtos: ${products.length}, Erros: ${errorRows.length}`);
 
   } catch (error) {
     console.error(`Erro no processamento do job ${jobId}:`, error);
