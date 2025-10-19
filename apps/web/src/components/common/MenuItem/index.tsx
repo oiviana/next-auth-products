@@ -1,17 +1,20 @@
 "use client";
-
 import { useRouter } from "next/navigation";
 
 interface MenuItemProps {
   title: string;
   navigateTo: string;
   icon?: string;
+  onClick?: () => void;
 }
 
-export default function MenuItem({ title, navigateTo, icon }: MenuItemProps) {
+export default function MenuItem({ title, navigateTo, icon, onClick }: MenuItemProps) {
   const router = useRouter();
 
   const handleClick = () => {
+    if (onClick) {
+      onClick();
+    }
     router.push(navigateTo);
   };
 
