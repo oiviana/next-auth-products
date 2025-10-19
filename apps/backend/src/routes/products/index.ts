@@ -4,7 +4,7 @@ import { Prisma } from "@prisma-generated/prisma";
 
 export async function productRoutes(server: FastifyInstance) {
 
-  server.get("/",
+  server.get("/all-products-by-seller",
     { preValidation: [server.authenticate] },
     async (req, reply) => {
       try {
@@ -29,7 +29,7 @@ export async function productRoutes(server: FastifyInstance) {
       }
     });
 
-  server.get("/all-products-by-seller",
+  server.get("/count-products-by-seller",
     { preValidation: [server.authenticate] },
     async (req, reply) => {
       try {
