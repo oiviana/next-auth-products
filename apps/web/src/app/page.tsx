@@ -1,25 +1,33 @@
 "use client";
 
+import LoadingScreen from "@/components/common/LoadingScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.replace("/auth");
-    }
-
-    if (!loading && user) {
-
-      if (user.role === "SELLER") router.replace("/seller");
-      else router.replace("/client");
+    if (!loading) {
+      if (!user) {
+        setRedirecting(true);
+        router.replace("/auth");
+      } else {
+        setRedirecting(true);
+        if (user.role === "SELLER") {
+          router.replace("/seller");
+        } else {
+          router.replace("/client");
+        }
+      }
     }
   }, [loading, user, router]);
 
-  if (loading) return <p>Carregando...</p>;
-  return <p>Redirecionando...</p>;
+
+  if (loading || redirecting) return <LoadingScreen />;
+  
+  return <LoadingScreen />;
 }

@@ -2,27 +2,28 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import LoginForm from "@/components/forms/LoginForm";
+import LoadingScreen from "@/components/common/LoadingScreen";
 
 export default function AuthPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) {
-
+    if (!loading && user && !redirecting) {
+      setRedirecting(true);
+      
       if (user.role === "SELLER") {
         router.replace("/seller");
-      }
-      
-      if (user.role === "CLIENT") {
+      } else if (user.role === "CLIENT") {
         router.replace("/client");
       }
     }
-  }, [loading, user, router]);
+  }, [loading, user, router, redirecting]);
 
-  if (loading) return <p>Carregando...</p>;
+  if (loading || redirecting) return <LoadingScreen />;
 
   return (
     <div className="min-h-screen flex items-center justify-center">
