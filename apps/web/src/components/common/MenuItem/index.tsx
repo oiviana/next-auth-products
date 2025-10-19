@@ -17,7 +17,7 @@ export default function MenuItem({ title, navigateTo, icon }: MenuItemProps) {
 
   return (
     <li 
-      className="p-2 hover:bg-amber-300 rounded cursor-pointer transition duration-200"
+      className="py-2 text:md lg:text-lg hover:text-amber-950 cursor-pointer"
       onClick={handleClick}
     >
       {icon && <span className="mr-2">{icon}</span>}
