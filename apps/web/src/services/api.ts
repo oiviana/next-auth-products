@@ -11,3 +11,8 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+export const productsService = {
+  getCountBySeller: () => api.get('/products/count-products-by-seller'),
+
+};
