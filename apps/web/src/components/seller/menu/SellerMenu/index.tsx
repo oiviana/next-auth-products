@@ -18,7 +18,7 @@ export default function SellerMenu() {
 
   return (
     <>
-      <div className="bg-white h-12 w-screen flex justify-end absolute top-0 z-20 lg:hidden">
+      <div className="bg-white h-12 w-screen flex justify-end absolute top-0 z-20 lg:hidden shadow-md">
         <button 
           className="h-full w-12 flex items-center justify-center"
           onClick={toggleMenu}
