@@ -14,10 +14,12 @@ api.interceptors.request.use((config) => {
 
 export const productsService = {
   getCountBySeller: () => api.get('/products/count-products-by-seller'),
+   getAvailableProducts: (params?: { page?: number; limit?: number }) => 
+    api.get('/products/all-available-for-sale', { params }),
+
 
 };
 
 export const usersService = {
- createNewUser: (data: any) => api.post('/users', data),
-
+  createNewUser: (data: any) => api.post('/users', data),
 };
