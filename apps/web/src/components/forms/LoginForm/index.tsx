@@ -47,7 +47,7 @@ export default function LoginForm() {
       <button 
         type="submit" 
         disabled={loading}
-        className="w-full bg-amber-900 text-white p-2 rounded disabled:bg-gray-400 my-4"
+        className="w-full bg-amber-900 text-white p-2 rounded disabled:bg-gray-400 my-4 cursor-pointer"
       >
         {loading ? "Entrando..." : "Entrar"}
       </button>
