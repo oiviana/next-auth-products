@@ -1,5 +1,11 @@
-export default function UserPage(){
-    return(
-        <h1>User Page</h1>
+import UserMenu from "@/components/user/menu/UserMenu";
+
+export default function UserPage() {
+    return (
+        <>
+            <UserMenu />
+            <h1>User Page</h1>
+        </>
+
     )
 }
