@@ -20,7 +20,7 @@ export default function HomePage() {
         if (user.role === "SELLER") {
           router.replace("/seller");
         } else {
-          router.replace("/client");
+          router.replace("/user");
         }
       }
     }
