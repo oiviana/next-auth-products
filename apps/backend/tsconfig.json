@@ -20,5 +20,5 @@
       "@schemas/*": ["./src/schemas/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "../web/src/types/product.d.ts"]
 }
