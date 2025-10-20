@@ -48,6 +48,11 @@ export default function UserMenu() {
                         navigateTo="/user/products"
                         onClick={handleMenuItemClick}
                     />
+                         <MenuItem
+                        title="Carrinho"
+                        navigateTo="/user/cart"
+                        onClick={handleMenuItemClick}
+                    />
                     <MenuItem
                         title="Minha Conta"
                         navigateTo="/user/account"

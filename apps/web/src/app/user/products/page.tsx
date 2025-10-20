@@ -1,15 +1,12 @@
-import Section from "@/components/common/Section";
+import UserLayout from "@/components/common/UserLayout";
 import ProductGrid from "@/components/product/ProductGrid";
-import UserMenu from "@/components/user/menu/UserMenu";
 
-export default function UserProductsPage(){
 
-    return(
-        <>
-        <UserMenu/>
-        <Section>
-            <ProductGrid/>
-        </Section>
-        </>
+export default function UserProductsPage() {
+
+    return (
+        <UserLayout>
+            <ProductGrid />
+        </UserLayout>
     )
 }
