@@ -39,8 +39,8 @@ export async function addCartItem(
     }
 
     if (product.stock < quantity) {
-      return reply.status(400).send({ 
-        message: `Quantidade indisponível. Estoque: ${product.stock}` 
+      return reply.status(400).send({
+        message: `Quantidade indisponível. Estoque: ${product.stock}`
       });
     }
 
@@ -69,7 +69,7 @@ export async function addCartItem(
       // Atualizar quantidade do item existente
       const updatedItem = await prisma.cartItem.update({
         where: { id: existingItem.id },
-        data: { 
+        data: {
           quantity: existingItem.quantity + quantity,
           addedAt: new Date()
         },
@@ -96,6 +96,64 @@ export async function addCartItem(
         cartItem: newItem,
       });
     }
+  } catch (error) {
+    request.server.log.error(error);
+    return reply.status(500).send({ message: "Erro interno do servidor" });
+  }
+}
+
+export async function getCart(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  try {
+    const userId = await getUserIdByToken(request);
+
+    // Buscar o carrinho do usuário com todos os itens e informações do produto
+    const cart = await prisma.cart.findUnique({
+      where: { userId },
+      include: {
+        items: {
+          include: {
+            product: {
+              include: {
+                store: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            addedAt: 'desc',
+          },
+        },
+      },
+    });
+
+    // Se não existir carrinho, retornar vazio
+    if (!cart) {
+      return reply.send({
+        id: null,
+        items: [],
+        totalItems: 0,
+        totalPrice: 0,
+      });
+    }
+
+    // Calcular totais
+    const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+    const totalPrice = cart.items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+
+    return reply.send({
+      id: cart.id,
+      items: cart.items,
+      totalItems,
+      totalPrice,
+      updatedAt: cart.updatedAt,
+    });
   } catch (error) {
     request.server.log.error(error);
     return reply.status(500).send({ message: "Erro interno do servidor" });
