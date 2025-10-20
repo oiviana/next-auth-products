@@ -24,3 +24,17 @@ export const productsService = {
 export const usersService = {
   createNewUser: (data: any) => api.post('/users', data),
 };
+
+export const cartService = {
+  addItem: (data: { productId: string; quantity: number }) => 
+    api.post('/cart/add-item', data),
+  
+  getCart: () => api.get('/cart'),
+  
+  updateItem: (itemId: string, data: { quantity: number }) => 
+    api.put(`/cart/items/${itemId}`, data),
+  
+  removeItem: (itemId: string) => api.delete(`/cart/items/${itemId}`),
+  
+  clearCart: () => api.delete('/cart/clear'),
+};
