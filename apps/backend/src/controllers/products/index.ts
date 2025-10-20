@@ -221,3 +221,51 @@ export async function getProductsAvailableForSale(
     return reply.status(500).send({ message: "Erro interno do servidor" });
   }
 }
+
+// Obter detalhes de um produto
+export async function getProductDetails(
+  request: FastifyRequest<{
+    Params: {
+      id: string;
+    };
+  }>,
+  reply: FastifyReply
+) {
+  try {
+    const { id } = request.params;
+
+    const product = await prisma.product.findUnique({
+      where: {
+        id,
+        isVisible: true,
+        store: {
+          isActive: true,
+        },
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true,
+            owner: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!product) {
+      return reply.status(404).send({ message: "Produto não encontrado" });
+    }
+
+    return reply.send(product);
+  } catch (error) {
+    request.server.log.error(error);
+    return reply.status(500).send({ message: "Erro interno do servidor" });
+  }
+}

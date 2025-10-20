@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getAllProductsBySeller, createProduct, getMoreSoldProduct, countAllProductsBySeller, totalProductsSoldBySeller, getTotalRevenueBySeller, getProductsAvailableForSale } from "@controllers/products";
+import { getAllProductsBySeller, createProduct, getMoreSoldProduct, countAllProductsBySeller, totalProductsSoldBySeller, getTotalRevenueBySeller, getProductsAvailableForSale, getProductDetails } from "@controllers/products";
 import { Prisma } from "@prisma-generated/prisma";
 import { FastifyRequest } from "fastify/types/request";
 
@@ -68,7 +68,6 @@ server.get("/all-available-for-sale",
       }
     }
   },
-  
   async (req, reply) => {
     try {
       const availableProducts = await getProductsAvailableForSale(req as FastifyRequest<{ Querystring: { page?: string; limit?: string } }>, reply);
@@ -79,6 +78,34 @@ server.get("/all-available-for-sale",
     }
   }
 );
+
+server.get("/:id",
+  { 
+    preValidation: [server.authenticate],
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' }
+        },
+        required: ['id']
+      }
+    }
+  },
+  async (req, reply) => {
+    try {
+      const productDetails = await getProductDetails(
+        req as FastifyRequest<{ Params: { id: string } }>, 
+        reply
+      );
+      return reply.send(productDetails);
+    } catch (error) {
+      server.log.error({ error }, "Erro ao buscar detalhes do produto");
+      return reply.status(500).send({ error: "Erro interno do servidor" });
+    }
+  }
+);
+
 
   server.get("/total-revenue-by-seller",
     { preValidation: [server.authenticate] },
