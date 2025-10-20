@@ -16,3 +16,8 @@ export const productsService = {
   getCountBySeller: () => api.get('/products/count-products-by-seller'),
 
 };
+
+export const usersService = {
+ createNewUser: (data: any) => api.post('/users', data),
+
+};
