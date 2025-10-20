@@ -1,14 +1,12 @@
 import Section from "@/components/common/Section"
+import SellerLayout from "@/components/common/SellerLayout"
 import SellerMenu from "@/components/seller/menu/SellerMenu"
 import Link from "next/link"
 
 export default function SellerProductsPage() {
   return (
-    <>
-    <SellerMenu/>
-    <Section>
+    <SellerLayout>
       <h2>Seus productos</h2>
-
       <Link
         href="/seller/products/new"
         style={{
@@ -23,7 +21,6 @@ export default function SellerProductsPage() {
       >
         Adicionar Produtos
       </Link>
-    </Section>
-    </>
+    </SellerLayout>
   )
 }

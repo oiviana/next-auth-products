@@ -1,24 +1,10 @@
-import Section from "@/components/common/Section";
-import SellerMenu from "@/components/seller/menu/SellerMenu";
+import SellerLayout from "@/components/common/SellerLayout";
 
 export default function AccountPage() {
 
     return (
-        <>
-            <SellerMenu />
-            <Section>
-                <div>
-                    <h1>
-                        Loja de Lucas Viana
-                    </h1>
-                </div>
-                <div>
-                    dados
-                </div>
-                <div>
-                    historico de vendas
-                </div>
-            </Section>
-        </>
+        <SellerLayout>
+            <h3>dados do usuario</h3>
+        </SellerLayout>
     )
 }
