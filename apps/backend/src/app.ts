@@ -6,6 +6,7 @@ import { userRoutes } from "@routes/users";
 import { Prisma } from "@prisma-generated/prisma";
 import { authRoutes } from "@routes/auth";
 import { uploadRoutes } from "@routes/upload";
+import { cartRoutes } from "@routes/cart";
 
 export async function app(server: FastifyInstance) {
   // Middlewares
@@ -30,4 +31,5 @@ export async function app(server: FastifyInstance) {
   server.register(userRoutes, { prefix: "/users" });
   server.register(authRoutes, { prefix: "/auth" });
   server.register(uploadRoutes, { prefix: "/upload" });
+  server.register(cartRoutes, { prefix: "/cart" });
 }
