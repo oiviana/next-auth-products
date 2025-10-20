@@ -151,3 +151,73 @@ export async function createProduct(
 ): Promise<Product> {
   return await prisma.product.create({ data });
 }
+
+
+// Produtos disponíveis para venda com paginação
+export async function getProductsAvailableForSale(
+  request: FastifyRequest<{
+    Querystring: {
+      page?: string;
+      limit?: string;
+    }
+  }>,
+  reply: FastifyReply
+) {
+  try {
+    const page = parseInt(request.query.page || '1');
+    const limit = parseInt(request.query.limit || '20'); 
+    const skip = (page - 1) * limit;
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where: {
+          isVisible: true,
+          store: {
+            isActive: true,
+          },
+        },
+        include: {
+          store: {
+            select: {
+              id: true,
+              name: true,
+              owner: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.product.count({
+        where: {
+          isVisible: true,
+          store: {
+            isActive: true,
+          },
+        },
+      }),
+    ]);
+
+    return reply.send({
+      products,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    request.server.log.error(error);
+    return reply.status(500).send({ message: "Erro interno do servidor" });
+  }
+}
