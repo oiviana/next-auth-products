@@ -4,11 +4,12 @@ import { useParams } from 'next/navigation';
 import { useProductDetails } from '@/hooks/products/useProductDetails';
 import Image from 'next/image';
 import Link from 'next/link';
+import AddToCart from '@/components/cart/addToCart';
 
 export default function ProductDetailsPage() {
   const params = useParams();
   const productId = params.id as string;
-  
+
   const { data: product, isLoading, error } = useProductDetails(productId);
 
   if (isLoading) {
@@ -35,7 +36,7 @@ export default function ProductDetailsPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Produto não encontrado</h1>
           <p className="text-gray-600 mb-6">O produto que você está procurando não existe ou não está mais disponível.</p>
-          <Link 
+          <Link
             href="/products"
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
@@ -92,14 +93,14 @@ export default function ProductDetailsPage() {
               </div>
             )}
           </div>
-          
+
         </div>
 
         {/* Informações do Produto */}
         <div className="space-y-6">
           {/* Loja */}
           {product.store && (
-            <Link 
+            <Link
               href={`/stores/${product.store.id}`}
               className="inline-block text-amber-900 font-medium"
             >
@@ -125,23 +126,13 @@ export default function ProductDetailsPage() {
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Descrição</h3>
             <p className="text-gray-600 leading-relaxed">{product.description}</p>
           </div>
-          
+
           {/* Ações */}
           <div className="flex space-x-4 pt-6">
-            <button
-              disabled={product.stock === 0}
-              className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors cursor-pointer ${
-                product.stock === 0
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-amber-900 text-white hover:bg-amber-950'
-              }`}
-            >
-              {product.stock === 0 ? 'Esgotado' : 'Adicionar ao Carrinho'}
-            </button>
-            
-            <button className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-              Favoritar
-            </button>
+            <AddToCart
+              productId={product.id}
+              stock={product.stock}
+            />
           </div>
         </div>
       </div>
