@@ -16,6 +16,7 @@ export const productsService = {
   getCountBySeller: () => api.get('/products/count-products-by-seller'),
    getAvailableProducts: (params?: { page?: number; limit?: number }) => 
     api.get('/products/all-available-for-sale', { params }),
+   getProductDetails: (id: string) => api.get(`/products/${id}`),
 
 
 };

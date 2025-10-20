@@ -36,7 +36,7 @@ export default function ProductCard({ product, className = '' }: ProductCardProp
 
   return (
     <div className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 ${className}`}>
-      <Link href={`/products/${id}`}>
+      <Link href={`products/${id}`}>
         {/* Wrapper da Imagem */}
         <div className="relative w-full h-48 bg-gray-200 overflow-hidden">
           {images && images.length > 0 ? (
@@ -64,21 +64,12 @@ export default function ProductCard({ product, className = '' }: ProductCardProp
 
       {/* Conteúdo do Card */}
       <div className="p-4">
-        {/* Nome da Loja (opcional) */}
-        {store && (
-          <Link href={`/stores/${store.id}`}>
-            <span className="text-xs text-amber-900 font-bold  mb-1 block">
-              vendido por: {store.name}
-            </span>
-          </Link>
-        )}
 
         {/* Nome do Produto */}
-        <Link href={`/products/${id}`}>
-          <h3 className="font-semibold text-gray-900 hover:text-blue-600 transition-colors line-clamp-2 mb-2">
+          <h3 className="font-semibold text-amber-950 transition-colors line-clamp-2 mb-2">
             {name}
           </h3>
-        </Link>
+
 
         {/* Descrição */}
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
