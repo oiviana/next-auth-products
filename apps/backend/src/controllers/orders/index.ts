@@ -114,3 +114,42 @@ export async function createOrder(
     return reply.status(500).send({ message: "Erro interno do servidor" });
   }
 }
+
+export async function getUserOrders(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  try {
+    const userId = await getUserIdByToken(request);
+
+    const orders = await prisma.order.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        items: {
+          include: {
+            product: {
+              include: {
+                store: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return reply.send(orders);
+  } catch (error) {
+    request.server.log.error(error);
+    return reply.status(500).send({ message: "Erro interno do servidor" });
+  }
+}
