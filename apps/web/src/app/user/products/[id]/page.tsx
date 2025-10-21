@@ -94,7 +94,7 @@ export default function ProductDetailsPage() {
               </div>
             )}
           </div>
- <FavoriteButton productId={product.id}/>
+          <FavoriteButton productId={product.id} />
         </div>
 
         {/* Informações do Produto */}
