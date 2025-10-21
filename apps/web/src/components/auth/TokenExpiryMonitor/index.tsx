@@ -50,17 +50,22 @@ export default function TokenExpiryMonitor({ checkInterval = 60000 }) {
   if (!showModal) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 max-w-sm mx-4 text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Sessão Expirada</h3>
-        <p className="text-gray-600 mb-4">Sua sessão expirou. Faça login novamente.</p>
-        <button
-          onClick={handleLoginAgain}
-          className="w-full bg-amber-900 text-white py-2 rounded hover:bg-amber-950 transition-colors"
-        >
-          Fazer Login novamente
-        </button>
+    <>
+      <div className="fixed inset-0 bg-black opacity-50 z-50" />
+      
+
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="bg-white rounded-lg p-6 max-w-sm mx-4 text-center">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Sessão Expirada</h3>
+          <p className="text-gray-600 mb-4">Sua sessão expirou. Faça login novamente.</p>
+          <button
+            onClick={handleLoginAgain}
+            className="w-full bg-amber-900 text-white py-2 rounded hover:bg-amber-950 transition-colors"
+          >
+            Fazer Login novamente
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
