@@ -57,3 +57,10 @@ export const ordersService = {
   
   getOrder: (id: string) => api.get(`/orders/${id}`),
 };
+
+export const analyticsService = {
+  getTotalRevenue: () => api.get('/products/total-revenue-by-seller'),
+  getTotalProductsSold: () => api.get('/products/all-products-sold-by-seller'),
+  getMostSoldProduct: () => api.get('/products/more-sold'),
+
+};
