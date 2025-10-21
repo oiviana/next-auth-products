@@ -38,3 +38,14 @@ export const cartService = {
   
   clearCart: () => api.delete('/cart/clear'),
 };
+
+// services/api.ts
+export const favoritesService = {
+  toggleFavorite: (data: { productId: string }) => 
+    api.post('/favorites/toggle', data),
+  
+  getFavorites: () => api.get('/favorites'),
+  
+  removeFavorite: (productId: string) => 
+    api.delete(`/favorites/${productId}`),
+}; 
