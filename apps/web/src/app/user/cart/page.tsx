@@ -3,17 +3,32 @@
 
 import UserLayout from "@/components/common/UserLayout";
 import { useCart } from "@/hooks/cart/useCart";
+import { useRemoveCartItem } from "@/hooks/cart/useRemoveCartItem";
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function CartPage() {
     const { data: cart, isLoading, error } = useCart();
+    const { mutate: removeItem, isPending: isRemoving } = useRemoveCartItem();
+    const [removingItemId, setRemovingItemId] = useState<string | null>(null);
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
             currency: 'BRL',
         }).format(price);
+    };
+
+    const handleRemoveItem = (itemId: string, productName: string) => {
+        if (window.confirm(`Deseja remover "${productName}" do carrinho?`)) {
+            setRemovingItemId(itemId);
+            removeItem(itemId, {
+                onSettled: () => {
+                    setRemovingItemId(null);
+                }
+            });
+        }
     };
 
     if (isLoading) {
@@ -82,7 +97,14 @@ export default function CartPage() {
                     {/* Lista de Itens */}
                     <div className="lg:col-span-2 space-y-4">
                         {cart.items.map((item) => (
-                            <div key={item.id} className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                            <div key={item.id} className="bg-white rounded-lg shadow border border-gray-200 p-4 relative">
+                                {/* Loading overlay durante remoção */}
+                                {removingItemId === item.id && (
+                                    <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center rounded-lg z-10">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-900"></div>
+                                    </div>
+                                )}
+                                
                                 <div className="flex items-start space-x-4">
                                     {/* Imagem do Produto */}
                                     <div className="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
@@ -103,20 +125,35 @@ export default function CartPage() {
 
                                     {/* Informações do Produto */}
                                     <div className="flex-1 min-w-0 relative">
-                                               <div className="flex items-center space-x-2  absolute top-[70%] left-[-30] bg-amber-950 w-5 h-5 shadow rounded-full justify-center">
+                                        <div className="flex items-center space-x-2 absolute top-[70%] left-[-30px] bg-amber-950 w-5 h-5 shadow rounded-full justify-center">
                                             <span className="text-sm text-white">{item.quantity}</span>
                                         </div>
-                                            <h3 className="font-semibold text-gray-900 line-clamp-2">{item.product.name}</h3>
+                                        
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex-1">
+                                                <h3 className="font-semibold text-gray-900 line-clamp-2">{item.product.name}</h3>
 
-                                        <p className="text-sm text-gray-600 mt-1">
-                                            Vendido por: {item.product.store.name}
-                                        </p>
+                                                <p className="text-sm text-gray-600 mt-1">
+                                                    Vendido por: {item.product.store.name}
+                                                </p>
 
-                                        <div className="flex items-center justify-between mt-2">
-                                            <div className="text-lg font-bold text-gray-900">
-                                                {formatPrice(item.product.price)}
+                                                <div className="flex items-center justify-between mt-2">
+                                                    <div className="text-lg font-bold text-gray-900">
+                                                        {formatPrice(item.product.price)}
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => handleRemoveItem(item.id, item.product.name)}
+                                                        disabled={isRemoving}
+                                                        className="text-red-600 hover:text-red-800 transition-colors disabled:opacity-50"
+                                                        title="Remover item"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
