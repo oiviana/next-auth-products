@@ -56,7 +56,7 @@ export default function TokenExpiryMonitor({ checkInterval = 60000 }) {
         <p className="text-gray-600 mb-4">Sua sessão expirou. Faça login novamente.</p>
         <button
           onClick={handleLoginAgain}
-          className="w-full bg-amber-900 text-white py-2 rounded hover:bg-amber-950 transition-colors cursor-pointer"
+          className="w-full bg-amber-900 text-white py-2 rounded hover:bg-amber-950 transition-colors"
         >
           Fazer Login novamente
         </button>

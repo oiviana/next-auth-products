@@ -50,7 +50,6 @@ export default function FavoriteButton({
         absolute
         right-4
         top-4
-        cursor-pointer
         ${className}
         ${
           isFavorite

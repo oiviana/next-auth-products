@@ -88,7 +88,7 @@ export default function ProductCard({ product, className = '' }: ProductCardProp
           {/* Botão de ação */}
           <button
             disabled={stock === 0}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               stock === 0
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 : 'bg-amber-950 text-white hover:bg-amber-800'
