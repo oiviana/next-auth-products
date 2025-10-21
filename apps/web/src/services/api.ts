@@ -53,7 +53,7 @@ export const favoritesService = {
 export const ordersService = {
   createOrder: () => api.post('/orders/create'),
   
-  getOrders: () => api.get('/orders'),
+   getOrders: () => api.get('/orders/my-orders'),
   
   getOrder: (id: string) => api.get(`/orders/${id}`),
 };
