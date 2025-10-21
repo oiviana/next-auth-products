@@ -1,9 +1,9 @@
 [build]
 builder = "nixpacks"
-buildCommand = "cd apps/backend && npm install && npm run build"
+projectPath = "apps/backend"
 
 [deploy]
-startCommand = "cd apps/backend && npx prisma generate && npx prisma db push && npm start"
+startCommand = "npx prisma generate && npx prisma db push && npm start"
 
 [env]
 NODE_ENV = "production"
