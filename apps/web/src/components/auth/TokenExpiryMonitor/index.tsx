@@ -1,57 +1,66 @@
 'use client';
+
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function TokenExpiryMonitor({ checkInterval = 60000 }) {
-    const { user, token, logout } = useAuth();
-    const [showModal, setShowModal] = useState(false);
+  const { user, token, logout } = useAuth();
+  const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
 
-    const checkToken = useCallback(() => {
-        if (!token) return false;
+  const checkToken = useCallback(() => {
+    if (!token) return false;
+    
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expiration = payload.exp * 1000;
+      return Date.now() >= expiration;
+    } catch {
+      return false;
+    }
+  }, [token]);
 
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const expiration = payload.exp * 1000;
-            return Date.now() >= expiration;
-        } catch {
-            return false;
-        }
-    }, [token]);
+  useEffect(() => {
+    if (!token || !user) return;
 
-    useEffect(() => {
-        if (!token || !user) return;
+    // Verificar imediatamente
+    if (checkToken()) {
+      setShowModal(true);
+      return;
+    }
 
-        if (checkToken()) {
-            setShowModal(true);
-            return;
-        }
-        const interval = setInterval(() => {
-            if (checkToken()) {
-                setShowModal(true);
-                clearInterval(interval);
-            }
-        }, checkInterval);
+    // Configurar intervalo para verificações futuras
+    const interval = setInterval(() => {
+      if (checkToken()) {
+        setShowModal(true);
+        clearInterval(interval);
+      }
+    }, checkInterval);
 
-        return () => clearInterval(interval);
-    }, [token, user, checkInterval, checkToken]);
+    return () => clearInterval(interval);
+  }, [token, user, checkInterval, checkToken]);
 
-    if (!showModal) return null;
+  const handleLoginAgain = () => {
+    logout();
+    setShowModal(false);
+    router.push('/auth'); 
+  };
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-lg p-6 max-w-sm mx-4 text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Sessão Expirada</h3>
-                <p className="text-gray-600 mb-4">Sua sessão expirou. Faça login novamente.</p>
-                <button
-                    onClick={() => {
-                        logout();
-                        setShowModal(false);
-                    }}
-                    className="w-full bg-amber-900 text-white py-2 rounded hover:bg-amber-950 transition-colors"
-                >
-                    Fazer Login
-                </button>
-            </div>
-        </div>
-    );
+  if (!showModal) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg p-6 max-w-sm mx-4 text-center">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Sessão Expirada</h3>
+        <p className="text-gray-600 mb-4">Sua sessão expirou. Faça login novamente.</p>
+        <button
+          onClick={handleLoginAgain}
+          className="w-full bg-amber-900 text-white py-2 rounded hover:bg-amber-950 transition-colors cursor-pointer"
+        >
+          Fazer Login novamente
+        </button>
+      </div>
+    </div>
+  );
 }
