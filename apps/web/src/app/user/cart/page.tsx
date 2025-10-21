@@ -5,6 +5,7 @@ import UserLayout from "@/components/common/UserLayout";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
 import { useCart } from "@/hooks/cart/useCart";
 import { useRemoveCartItem } from "@/hooks/cart/useRemoveCartItem";
+import { useCreateOrder } from "@/hooks/orders/useCreateOrder";
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -13,6 +14,7 @@ export default function CartPage() {
     const { data: cart, isLoading, error } = useCart();
     const [showOrderDialog, setShowOrderDialog] = useState(false);
     const { mutate: removeItem, isPending: isRemoving } = useRemoveCartItem();
+    const { mutate: createOrder, isPending: isCreatingOrder } = useCreateOrder();
     const [removingItemId, setRemovingItemId] = useState<string | null>(null);
 
     const formatPrice = (price: number) => {
@@ -34,9 +36,17 @@ export default function CartPage() {
     };
 
     const confirmOrder = () => {
-        alert("Pedido finalizado")
-    }
-
+        createOrder(undefined, {
+            onSuccess: (data) => {
+                setShowOrderDialog(false);
+                alert('Pedido criado com sucesso!');
+                console.info('Pedido criado:', data);
+            },
+            onError: (error) => {
+                console.error('Erro ao criar pedido:', error);
+            }
+        });
+    };
     if (isLoading) {
         return (
             <UserLayout>
