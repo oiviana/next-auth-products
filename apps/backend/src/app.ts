@@ -8,6 +8,7 @@ import { authRoutes } from "@routes/auth";
 import { uploadRoutes } from "@routes/upload";
 import { cartRoutes } from "@routes/cart";
 import { favoriteRoutes } from "@routes/favorites";
+import { orderRoutes } from "@routes/orders";
 
 export async function app(server: FastifyInstance) {
   // Middlewares
@@ -40,4 +41,5 @@ export async function app(server: FastifyInstance) {
   server.register(uploadRoutes, { prefix: "/upload" });
   server.register(cartRoutes, { prefix: "/cart" });
   server.register(favoriteRoutes, { prefix: "/favorites" });
+  server.register(orderRoutes, { prefix: "/orders" });
 }
