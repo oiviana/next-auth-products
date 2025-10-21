@@ -2,6 +2,7 @@ import { Providers } from "@/contexts/Providers";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import TokenExpiryMonitor from "@/components/auth/TokenExpiryMonitor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          <TokenExpiryMonitor checkInterval={30000} />
         </Providers>
       </body>
     </html>
