@@ -5,6 +5,7 @@ import { useProductDetails } from '@/hooks/products/useProductDetails';
 import Image from 'next/image';
 import Link from 'next/link';
 import AddToCart from '@/components/cart/addToCart';
+import FavoriteButton from '@/components/favorites/FavoriteButton';
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -77,7 +78,7 @@ export default function ProductDetailsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Galeria de Imagens */}
-        <div className="space-y-4">
+        <div className="space-y-4 relative">
           <div className="bg-gray-100 rounded-lg overflow-hidden">
             {product.images && product.images.length > 0 ? (
               <Image
@@ -93,7 +94,7 @@ export default function ProductDetailsPage() {
               </div>
             )}
           </div>
-
+ <FavoriteButton productId={product.id}/>
         </div>
 
         {/* Informações do Produto */}
