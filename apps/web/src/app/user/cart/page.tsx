@@ -2,6 +2,7 @@
 'use client';
 
 import UserLayout from "@/components/common/UserLayout";
+import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
 import { useCart } from "@/hooks/cart/useCart";
 import { useRemoveCartItem } from "@/hooks/cart/useRemoveCartItem";
 import Image from 'next/image';
@@ -10,6 +11,7 @@ import { useState } from 'react';
 
 export default function CartPage() {
     const { data: cart, isLoading, error } = useCart();
+    const [showOrderDialog, setShowOrderDialog] = useState(false);
     const { mutate: removeItem, isPending: isRemoving } = useRemoveCartItem();
     const [removingItemId, setRemovingItemId] = useState<string | null>(null);
 
@@ -30,6 +32,10 @@ export default function CartPage() {
             });
         }
     };
+
+    const confirmOrder = () => {
+        alert("Pedido finalizado")
+    }
 
     if (isLoading) {
         return (
@@ -104,7 +110,7 @@ export default function CartPage() {
                                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-900"></div>
                                     </div>
                                 )}
-                                
+
                                 <div className="flex items-start space-x-4">
                                     {/* Imagem do Produto */}
                                     <div className="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
@@ -128,7 +134,7 @@ export default function CartPage() {
                                         <div className="flex items-center space-x-2 absolute top-[70%] left-[-30px] bg-amber-950 w-5 h-5 shadow rounded-full justify-center">
                                             <span className="text-sm text-white">{item.quantity}</span>
                                         </div>
-                                        
+
                                         <div className="flex justify-between items-start">
                                             <div className="flex-1">
                                                 <h3 className="font-semibold text-gray-900 line-clamp-2">{item.product.name}</h3>
@@ -163,6 +169,14 @@ export default function CartPage() {
 
                     {/* Resumo do Pedido */}
                     <div className="bg-white rounded-lg shadow border border-gray-200 p-6 h-fit">
+                        <ConfirmationDialog
+                            isOpen={showOrderDialog}
+                            message="Deseja finalizar seu pedido?"
+                            cancelText="Cancelar"
+                            confirmText="Finalizar pedido"
+                            onConfirm={confirmOrder}
+                            onClose={() => setShowOrderDialog(false)}
+                        />
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumo do Pedido</h3>
 
                         <div className="space-y-3 mb-6">
@@ -184,7 +198,8 @@ export default function CartPage() {
                             </div>
                         </div>
 
-                        <button className="w-full bg-amber-900 text-white py-3 px-6 rounded-lg hover:bg-amber-950 transition-colors font-medium">
+                        <button className="w-full bg-amber-900 text-white py-3 px-6 rounded-lg hover:bg-amber-950 transition-colors font-medium"
+                            onClick={() => setShowOrderDialog(true)}>
                             Finalizar Compra
                         </button>
 
