@@ -147,10 +147,72 @@ export async function getMoreSoldProduct(
 
 // Cria um produto
 export async function createProduct(
-  data: Prisma.ProductCreateInput
-): Promise<Product> {
-  return await prisma.product.create({ data });
+  request: FastifyRequest<{
+    Body: CreateProductBody;
+  }>,
+  reply: FastifyReply
+) {
+  try {
+    console.log("🟡 [createProduct] Iniciando criação de produto...");
+
+    // Obter o ID do usuário via token
+    const userId = await getUserIdByToken(request);
+    console.log("👤 userId obtido:", userId);
+
+    const { name, description, price, stock, isVisible = true } = request.body;
+    console.log("📦 Dados recebidos do body:", {
+      name,
+      description,
+      price,
+      stock,
+      isVisible,
+    });
+
+    // Buscar a loja associada ao usuário autenticado
+    const store = await prisma.store.findUnique({
+      where: { ownerId: userId },
+    });
+    console.log("🏬 Loja encontrada:", store);
+
+    if (!store) {
+      console.warn("⚠️ Nenhuma loja encontrada para o usuário:", userId);
+      return reply.status(404).send({ message: "Loja não encontrada" });
+    }
+
+    // Criar produto
+    const product = await prisma.product.create({
+      data: {
+        name,
+        description,
+        price,
+        stock,
+        isVisible,
+        store: {
+          connect: {
+            id: store.id,
+          },
+        },
+      },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    console.log("✅ Produto criado com sucesso:", product);
+
+    return reply.status(201).send(product);
+  } catch (error) {
+    console.error("❌ Erro ao criar produto:", error);
+    request.server.log.error(error);
+    return reply.status(500).send({ message: "Erro interno do servidor" });
+  }
 }
+
 
 
 // Produtos disponíveis para venda com paginação

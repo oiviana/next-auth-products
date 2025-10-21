@@ -29,3 +29,12 @@ export interface ProductsResponse {
     totalPages: number;
   };
 }
+
+
+export interface CreateProductData {
+  name: string;
+  description?: string;
+  price: number;
+  stock: number;
+  isVisible?: boolean;
+}

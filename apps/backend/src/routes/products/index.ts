@@ -120,19 +120,17 @@ server.get("/:id",
     });
 
 
-  server.post<{ Body: Prisma.ProductCreateInput }>(
-    "/",
-    { preValidation: [server.authenticate] },
-    async (req, reply) => {
-      try {
-        const data = req.body;
-        const product = await createProduct(data);
-
-        return reply.status(201).send(product);
-      } catch (error) {
-        server.log.error({ error }, "Erro ao criar produto");
-        return reply.status(500).send({ error: "Erro interno do servidor" });
-      }
+server.post<{ Body: CreateProductBody }>(
+  "/",
+  { preValidation: [server.authenticate] },
+  async (req, reply) => {
+    try {
+      const product = await createProduct(req, reply);
+      return reply.status(201).send(product);
+    } catch (error) {
+      server.log.error({ error }, "Erro ao criar produto");
+      return reply.status(500).send({ error: "Erro interno do servidor" });
     }
-  );
+  }
+);
 }
