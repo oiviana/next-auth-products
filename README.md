@@ -210,7 +210,205 @@ yarn docker:up
 ### Upload
 - `POST /upload/csv` - Upload de arquivo CSV para importar produtos
 
-## 🗄️ Modelo de Dados
+## 🗄️ Modelo de Dados do Banco
+
+### Schema Prisma
+
+O banco de dados é modelado através do Prisma ORM com PostgreSQL. O schema define as seguintes estruturas:
+
+#### Enums
+```prisma
+enum Role {
+  CLIENT    // Cliente comum
+  SELLER    // Vendedor
+  ADMIN     // Administrador
+}
+
+enum OrderStatus {
+  PENDING     // Pedido pendente
+  COMPLETED   // Pedido concluído
+  CANCELLED   // Pedido cancelado
+}
+
+enum ImportStatus {
+  PENDING                // Importação pendente
+  PROCESSING             // Processando
+  COMPLETED              // Concluída
+  COMPLETED_WITH_ERRORS // Concluída com erros
+  FAILED                 // Falhou
+}
+```
+
+#### Modelos Principais
+
+**User** - Usuários do sistema
+```prisma
+model User {
+  id           String   @id @default(uuid())
+  name         String?
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(CLIENT)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relacionamentos
+  store     Store?
+  favorites Favorite[]
+  cart      Cart?
+  orders    Order[]
+  imports   CSVImportJob[]
+}
+```
+
+**Store** - Lojas dos vendedores
+```prisma
+model Store {
+  id        String   @id @default(uuid())
+  ownerId   String   @unique
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relacionamentos
+  owner    User      @relation(fields: [ownerId], references: [id])
+  products Product[]
+}
+```
+
+**Product** - Produtos com otimizações de performance
+```prisma
+model Product {
+  id          String  @id @default(uuid())
+  storeId     String
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  publishedAt DateTime @default(now())
+  isVisible   Boolean  @default(true)
+  stock       Int      @default(0)
+  soldCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relacionamentos
+  store      Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+  favorites  Favorite[]
+  cartItems  CartItem[]
+  
+  // Índices para otimização
+  @@index([name])
+  @@index([price])
+  @@index([publishedAt])
+  @@index([isVisible])
+  @@index([storeId])
+}
+```
+
+**Order & OrderItem** - Sistema de pedidos
+```prisma
+model Order {
+  id        String      @id @default(uuid())
+  userId    String
+  total     Float
+  status    OrderStatus @default(COMPLETED)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relacionamentos
+  user  User        @relation("userOrders", fields: [userId], references: [id])
+  items OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  unitPrice Float
+  
+  // Relacionamentos
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+```
+
+**Cart & CartItem** - Carrinho de compras
+```prisma
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  updatedAt DateTime  @updatedAt
+  createdAt DateTime  @default(now())
+  
+  // Relacionamentos
+  user  User       @relation(fields: [userId], references: [id])
+  items CartItem[]
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  productId String
+  quantity  Int
+  addedAt   DateTime @default(now())
+  
+  // Relacionamentos
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+  
+  // Índices
+  @@index([cartId])
+  @@index([productId])
+}
+```
+
+**Favorite** - Sistema de favoritos
+```prisma
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  
+  // Relacionamentos
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  
+  // Constraints e índices
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+}
+```
+
+**CSVImportJob** - Sistema de importação em lote
+```prisma
+model CSVImportJob {
+  id            String        @id @default(cuid())
+  userId        String
+  fileUrl       String
+  status        ImportStatus  @default(PENDING)
+  progress       Int           @default(0)
+  totalRows     Int?
+  processedRows Int?
+  errorRows     Int?
+  errorFileUrl  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Índices
+  @@index([userId])
+  @@index([status])
+}
+```
 
 ### Principais Entidades
 
@@ -229,6 +427,15 @@ yarn docker:up
 - User → Order (1:N) - Usuário pode ter vários pedidos
 - User → Cart (1:1) - Usuário possui um carrinho
 - User → Favorite (1:N) - Usuário pode favoritar produtos
+
+### Características Técnicas
+
+- **UUIDs** como chaves primárias para melhor distribuição
+- **Índices otimizados** para consultas frequentes
+- **Soft delete** através do campo `isActive`
+- **Cascade delete** para manter integridade referencial
+- **Timestamps automáticos** para auditoria
+- **Constraints únicas** para evitar duplicatas
 
 ## 🔐 Autenticação e Autorização
 
