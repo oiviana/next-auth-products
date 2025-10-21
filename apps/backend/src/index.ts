@@ -2,7 +2,7 @@ import Fastify from 'fastify';
 import { app } from './app';
 import authentication from '@plugins/authentication';
 
-const serverPort = parseInt(process.env.SERVER_PORT || '3333', 10);
+const serverPort = parseInt(process.env.PORT || process.env.SERVER_PORT || '3333', 10);
 
 export const server = Fastify({
   logger: {
@@ -23,7 +23,7 @@ const start = async () => {
   try {
     await app(server);
     await server.listen({ port: serverPort, host: "0.0.0.0" });
-    console.info(`index.ts: Server running at localhost on port ${serverPort}`);
+    console.info(`Server running on port ${serverPort}`);
   } catch (err) {
     server.log.error(err);
     process.exit(1);
