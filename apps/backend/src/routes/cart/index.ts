@@ -1,9 +1,9 @@
-import { addCartItem, getCart } from "@controllers/cart";
+import { addCartItem, getCart, removeCartItem } from "@controllers/cart";
 import { FastifyInstance } from "fastify";
 import { FastifyRequest } from "fastify/types/request";
 
 export async function cartRoutes(server: FastifyInstance) {
-  
+
   server.get("/",
     {
       preValidation: [server.authenticate]
@@ -46,5 +46,32 @@ export async function cartRoutes(server: FastifyInstance) {
       }
     }
   );
+
+  server.delete("/items/:itemId",
+  { 
+    preValidation: [server.authenticate],
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          itemId: { type: 'string' }
+        },
+        required: ['itemId']
+      }
+    }
+  },
+  async (req, reply) => {
+    try {
+      const result = await removeCartItem(
+        req as FastifyRequest<{ Params: { itemId: string } }>, 
+        reply
+      );
+      return result;
+    } catch (error) {
+      server.log.error({ error }, "Erro ao remover item do carrinho");
+      return reply.status(500).send({ error: "Erro interno do servidor" });
+    }
+  }
+);
 
 }

@@ -102,6 +102,62 @@ export async function addCartItem(
   }
 }
 
+export async function removeCartItem(
+  request: FastifyRequest<{
+    Params: {
+      itemId: string;
+    };
+  }>,
+  reply: FastifyReply
+) {
+  try {
+    const userId = await getUserIdByToken(request);
+    const { itemId } = request.params;
+
+    // Verificar se o item existe e pertence ao usuário
+    const cartItem = await prisma.cartItem.findFirst({
+      where: {
+        id: itemId,
+        cart: {
+          userId: userId,
+        },
+      },
+      include: {
+        cart: true,
+      },
+    });
+
+    if (!cartItem) {
+      return reply.status(404).send({ message: "Item não encontrado no carrinho" });
+    }
+
+    // Remover o item do carrinho
+    await prisma.cartItem.delete({
+      where: {
+        id: itemId,
+      },
+    });
+
+    // Atualizar o updatedAt do carrinho
+    await prisma.cart.update({
+      where: {
+        id: cartItem.cartId,
+      },
+      data: {
+        updatedAt: new Date(),
+      },
+    });
+
+    return reply.status(200).send({ 
+      message: "Item removido do carrinho",
+      removedItemId: itemId 
+    });
+  } catch (error) {
+    request.server.log.error(error);
+    return reply.status(500).send({ message: "Erro interno do servidor" });
+  }
+}
+
 export async function getCart(
   request: FastifyRequest,
   reply: FastifyReply
