@@ -10,7 +10,13 @@ import { cartRoutes } from "@routes/cart";
 
 export async function app(server: FastifyInstance) {
   // Middlewares
-  await server.register(cors, { origin: true });
+  await server.register(cors, {
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  });
+
   await server.register(prismaPlugin);
 
   // Error handler global
